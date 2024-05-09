@@ -1,6 +1,5 @@
 ERRORES AHORA:
 2- Arreglar calendario, no se muestran las clases cuando el mes se cambia
-3- Que la pantalla de carga en CrearClase() se quite.
 
 1. CONTROLAR EXCEPCIÓN CUANDO CREAS UN EJERCICIO: 
     SI EL EJERCICIO NO TIENE IMÁGENES, QUE NO SE MUESTRE NADA.

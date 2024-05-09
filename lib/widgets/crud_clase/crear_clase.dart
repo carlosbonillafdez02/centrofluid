@@ -12,8 +12,8 @@ class CrearClase extends StatefulWidget {
 }
 
 class _CrearClaseState extends State<CrearClase> {
-  late final UsuariosService _usuariosService;
-  late final SesionesService _sesionesService;
+  //late final UsuariosService usuariosService;
+  //late final SesionesService sesionesService;
 
   late List<Usuario> _usuarios = [];
   late Usuario _entrenadorSeleccionado =
@@ -30,18 +30,18 @@ class _CrearClaseState extends State<CrearClase> {
   @override
   void initState() {
     super.initState();
-    _usuariosService = Provider.of<UsuariosService>(context);
-    _sesionesService = Provider.of<SesionesService>(context);
- 
+    //usuariosService = Provider.of<UsuariosService>(context);
+    //sesionesService = Provider.of<SesionesService>(context);
+
     //_loadUsuarios();
     //_loadSesiones();
-    print(_usuariosService.isLoading);
-    print(_sesionesService.isLoading);
+    //print(usuariosService.isLoading);
+    //print(sesionesService.isLoading);
   }
-
+/*
   Future<void> _loadUsuarios() async {
-    //final usuarios = await _usuariosService.loadUsuarios();
-    _usuarios = _usuariosService.usuarios;
+    //final usuarios = await usuariosService.loadUsuarios();
+    _usuarios = usuariosService.usuarios;
     setState(() {
       // Seleccionar el primer usuario por defecto
       _entrenadorSeleccionado = _usuarios.isNotEmpty
@@ -51,22 +51,27 @@ class _CrearClaseState extends State<CrearClase> {
   }
 
   Future<void> _loadSesiones() async {
-    //final sesiones = await _sesionesService.loadSesiones();
-    _sesiones = _sesionesService.sesiones;
+    //final sesiones = await sesionesService.loadSesiones();
+    _sesiones = sesionesService.sesiones;
     setState(() {
       _sesionSeleccionada = _sesiones.isNotEmpty
           ? _sesiones[0]
           : Sesion(ejercicios: [], nombre: "");
     });
   }
+*/
 
   @override
   Widget build(BuildContext context) {
-    if (_usuariosService.isLoading || _sesionesService.isLoading) {
+    final usuariosService = Provider.of<UsuariosService>(context);
+    final sesionesService = Provider.of<SesionesService>(context);
+    if (usuariosService.isLoading || sesionesService.isLoading) {
       return LoadingScreen();
     } else {
-      _loadSesiones();
-      _loadUsuarios();
+      _sesiones = sesionesService.sesiones;
+      _usuarios = usuariosService.usuarios;
+      _entrenadorSeleccionado = _usuarios[0];
+      _sesionSeleccionada = _sesiones[0];
       return Scaffold(
         appBar: AppBar(
           title: Text('Crear Clase'),
@@ -110,37 +115,6 @@ class _CrearClaseState extends State<CrearClase> {
         ),
       );
     }
-  }
-
-  Widget _buildSesionDropdown() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Sesión:',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 8),
-        DropdownButtonFormField<Sesion>(
-          value: _sesionSeleccionada,
-          items: _sesionesService.sesiones.map((sesion) {
-            return DropdownMenuItem<Sesion>(
-              value: sesion,
-              child: Text(sesion.nombre),
-            );
-          }).toList(),
-          onChanged: (value) {
-            setState(() {
-              _sesionSeleccionada = value!;
-            });
-          },
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            hintText: 'Seleccionar sesión',
-          ),
-        ),
-      ],
-    );
   }
 
   void _crearClase() {
@@ -265,6 +239,37 @@ class _CrearClaseState extends State<CrearClase> {
         border: OutlineInputBorder(),
         hintText: 'Seleccionar entrenador',
       ),
+    );
+  }
+
+  Widget _buildSesionDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Sesión:',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 8),
+        DropdownButtonFormField<Sesion>(
+          value: _sesionSeleccionada,
+          items: _sesiones.map((sesion) {
+            return DropdownMenuItem<Sesion>(
+              value: sesion,
+              child: Text(sesion.nombre),
+            );
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              _sesionSeleccionada = value!;
+            });
+          },
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            hintText: 'Seleccionar sesión',
+          ),
+        ),
+      ],
     );
   }
 }
