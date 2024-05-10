@@ -11,7 +11,7 @@ class UsuariosService extends ChangeNotifier {
   Usuario? usuarioSeleccionado;
 
   bool isLoading = true;
-  bool isSaving = false;
+  //bool isSaving = false;
 
   UsuariosService() {
     loadUsuarios();
@@ -42,75 +42,8 @@ class UsuariosService extends ChangeNotifier {
     return this.usuarios;
   }
 
-  /*Future<List<Usuario>> loadUsuarios() async {
-    notifyListeners();
-
-    final url = Uri.https(_baseURL, 'usuarios.json', {'auth': _firebaseToken});
-    final resp = await http.get(url);
-
-    if (resp.statusCode == 200) {
-      final Map<String, dynamic> usuariosMap = json.decode(resp.body);
-
-      this.usuarios.clear();
-
-      usuariosMap.forEach((key, value) {
-        final tempUser = Usuario.fromMap(value);
-        tempUser.id = key;
-        usuarios.add(tempUser);
-      });
-
-      return usuarios;
-    } else {
-      print('La respuesta no es exitosa');
-      print('HTTP status: ${resp.statusCode}');
-      print('HTTP body: ${resp.body}');
-      return [];
-    }
-  }*/
-  /*
-  Future<List<Usuario>> loadUsuarios() async {
-    isLoading = true;
-
-    //notifyListeners();
-
-    final url = Uri.https(_baseURL, 'usuarios.json', {'auth': _firebaseToken});
-    final resp = await http.get(url);
-
-    if (resp.statusCode == 200) {
-      final dynamic responseData = json.decode(resp.body);
-
-      if (responseData is Map<String, dynamic>) {
-        this.usuarios.clear();
-
-        responseData.forEach((key, value) {
-          if (value is Map<String, dynamic>) {
-            final tempUser = Usuario.fromMap(value);
-            tempUser.id = key;
-            usuarios.add(tempUser);
-          }
-        });
-        isLoading = false;
-        notifyListeners();
-        print('Realiza loadUsuarios');
-        return usuarios;
-      } else {
-        print('El cuerpo de la respuesta no es un mapa');
-        isLoading = false;
-        // notifyListeners();
-        return [];
-      }
-    } else {
-      print('La respuesta no es exitosa');
-      print('HTTP status: ${resp.statusCode}');
-      print('HTTP body: ${resp.body}');
-      isLoading = false;
-      // notifyListeners();
-      return [];
-    }
-  }
-*/
-  // Devuelve una lista de usuarios que son peluqueros
-  Future<List<Usuario>> loadPeluqueros() async {
+  // Devuelve una lista de usuarios que son entrenadores
+  Future<List<Usuario>> loadEntrenadores() async {
     isLoading = true;
     notifyListeners();
 
@@ -130,8 +63,10 @@ class UsuariosService extends ChangeNotifier {
   }
 
   Future<Usuario?> getUsuarioByEmail(String email) async {
-    List<Usuario> users = await loadUsuarios();
-    var filteredUsers = users.where((u) => u.email == email);
+    if (isLoading) {
+      loadUsuarios();
+    }
+    var filteredUsers = usuarios.where((u) => u.email == email);
     if (filteredUsers.isNotEmpty) {
       return filteredUsers.first;
     } else {
@@ -164,6 +99,24 @@ class UsuariosService extends ChangeNotifier {
     final decodedData = resp.body;
 
     return id;
+  }
+
+  Future<void> updateUserFotoPerfil(String id, String fotoPerfil) async {
+    final url =
+        Uri.https(_baseURL, 'usuarios/$id.json', {'auth': _firebaseToken});
+    final response =
+        await http.patch(url, body: json.encode({'fotoPerfil': fotoPerfil}));
+
+    if (response.statusCode == 200) {
+      // Update the local user data with the new image path
+      final index = usuarios.indexWhere((user) => user.id == id);
+      if (index != -1) {
+        usuarios[index].fotoPerfil = fotoPerfil;
+        notifyListeners();
+      }
+    } else {
+      throw Exception('Failed to update user image path');
+    }
   }
 
   Future<String> saveUsuario(Usuario usuario) async {

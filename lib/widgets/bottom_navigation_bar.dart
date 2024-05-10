@@ -12,7 +12,7 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
   final List<Widget> _screens = [
     HomeScreen(),
     ReservaScreen(),
-    ProfileScreen(),
+    PerfilScreen(),
     MenuScreen(),
   ];
 

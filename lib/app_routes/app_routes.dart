@@ -27,7 +27,7 @@ class AppRoutes {
         route: 'profile',
         icon: Icons.person,
         name: 'Perfil',
-        screen: const ProfileScreen()),
+        screen: PerfilScreen()),
     MenuOption(
         route: 'menu',
         icon: Icons.abc,
@@ -86,7 +86,7 @@ class AppRoutes {
     'card': (BuildContext context) => const CardScreen(),
     */
     'home': (BuildContext context) => const HomeScreen(),
-    'profile': (BuildContext context) => const ProfileScreen(),
+    'profile': (BuildContext context) => PerfilScreen(),
     'menu': (BuildContext context) => const MenuScreen(),
   };
 

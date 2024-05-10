@@ -12,15 +12,17 @@ class Usuario {
   String? direccion;
   String? codigoPostal;
 
-  Usuario({
-    this.id,
-    required this.email,
-    required this.nombre,
-    this.apellido,
-    required this.telefono,
-    this.direccion,
-    this.codigoPostal,
-  });
+  String? fotoPerfil;
+
+  Usuario(
+      {this.id,
+      required this.email,
+      required this.nombre,
+      this.apellido,
+      required this.telefono,
+      this.direccion,
+      this.codigoPostal,
+      this.fotoPerfil});
 
   factory Usuario.fromJson(String str) => Usuario.fromMap(json.decode(str));
 
@@ -34,6 +36,7 @@ class Usuario {
         direccion: json["direccion"] != null ? json["direccion"] : "",
         codigoPostal:
             json["codigoPostal"] != null ? json["codigoPostal"].toString() : "",
+        fotoPerfil: json["fotoPerfil"] != null ? json["direccion"] : "",
       );
 
   Map<String, dynamic> toMap() => {
@@ -43,15 +46,16 @@ class Usuario {
         "telefono": telefono,
         "direccion": direccion,
         "codigoPostal": codigoPostal,
+        "fotoPerfil": fotoPerfil
       };
 
   Usuario copy() => Usuario(
-        id: this.id,
-        email: this.email,
-        nombre: this.nombre,
-        apellido: this.apellido,
-        telefono: this.telefono,
-        direccion: this.direccion,
-        codigoPostal: this.codigoPostal,
-      );
+      id: this.id,
+      email: this.email,
+      nombre: this.nombre,
+      apellido: this.apellido,
+      telefono: this.telefono,
+      direccion: this.direccion,
+      codigoPostal: this.codigoPostal,
+      fotoPerfil: this.fotoPerfil);
 }

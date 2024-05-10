@@ -17,14 +17,22 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Centro Fluid',
-      theme: AppTheme.theme,
-      initialRoute: AppRoutes.initialRoute,
-      onGenerateRoute: AppRoutes.onGenerateRoute,
-      //home: ReservaScreen(),
-    );
+    return ChangeNotifierProvider(
+        create: (context) => ThemeProvider(),
+        child:
+            Consumer<ThemeProvider>(builder: (context, themeProvider, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Centro Fluid',
+            theme: themeProvider.isDarkMode
+                ? AppTheme.darkTheme
+                : AppTheme.lightTheme,
+
+            initialRoute: AppRoutes.initialRoute,
+            onGenerateRoute: AppRoutes.onGenerateRoute,
+            //home: ReservaScreen(),
+          );
+        }));
   }
 }
 
