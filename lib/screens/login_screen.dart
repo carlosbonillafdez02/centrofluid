@@ -89,10 +89,9 @@ class _LoginForm extends StatelessWidget {
 
   void biometricLogin(LoginFormProvider loginForm, context) async {
     LocalAuthentication auth = LocalAuthentication();
-    bool deviceSupported = await auth.isDeviceSupported();
+    // bool deviceSupported = await auth.isDeviceSupported();
 
-    List<BiometricType> availableBiometrics =
-        await auth.getAvailableBiometrics();
+    //List<BiometricType> availableBiometrics = await auth.getAvailableBiometrics();
 
     try {
       bool authenticated = await auth.authenticate(
@@ -122,6 +121,7 @@ class _LoginForm extends StatelessWidget {
       }
     } on PlatformException catch (e) {
       // Handle platform exceptions
+      print(e);
     }
   }
 

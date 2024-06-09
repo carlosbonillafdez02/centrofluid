@@ -5,7 +5,6 @@ import 'package:fl_centro_fluid/providers/providers.dart';
 import 'package:fl_centro_fluid/services/services.dart';
 import 'package:fl_centro_fluid/widgets/widgets.dart';
 import 'package:provider/provider.dart';
-//import 'package:fl_centro_fluid/screens/mi_menu_desplegable.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -38,8 +37,7 @@ class _RegisterForm extends StatelessWidget {
     if (registerForm.isLoading) return;
     FocusScope.of(context).unfocus();
     final authService = Provider.of<AuthService>(context, listen: false);
-    final usuariosService =
-        Provider.of<UsuariosService>(context, listen: false);
+    Provider.of<UsuariosService>(context, listen: false);
     if (!registerForm.isValidForm()) return;
 
     registerForm.isLoading = true;
@@ -47,8 +45,7 @@ class _RegisterForm extends StatelessWidget {
     final String? errorMessage =
         await authService.createUser(registerForm.email, registerForm.password);
     if (errorMessage == null) {
-      String response =
-          await usuariosService.saveUsuario(generateUsuario(registerForm));
+      // String response = await usuariosService.saveUsuario(generateUsuario(registerForm));
       registerForm.isLoading = false;
       Navigator.pushReplacementNamed(context, 'login');
     } else {

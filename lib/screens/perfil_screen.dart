@@ -17,6 +17,7 @@ class PerfilScreen extends StatefulWidget {
 class _PerfilScreenState extends State<PerfilScreen> {
   final _formKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
+  // ignore: unused_field
   XFile? _imageFile;
 
   @override

@@ -62,9 +62,11 @@ class AuthService extends ChangeNotifier {
   Future<String?> getUserRole() async {
     final idToken = await storage.read(key: 'idToken');
     final url = Uri.parse(_baseUrl + '/v1/accounts:lookup');
+    // ignore: unused_local_variable
     final response = await http.get(url, headers: {
       'Authorization': 'Bearer $idToken',
     });
+    return null;
   }
 
   Future<void> sendPasswordResetEmail(String email) async {

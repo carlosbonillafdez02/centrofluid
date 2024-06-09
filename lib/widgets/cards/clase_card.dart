@@ -130,7 +130,7 @@ class _ClaseCardState extends State<ClaseCard> {
 
   Future<void> _mostrarDialogoEliminarClase(
       BuildContext context, Clase clase, ClasesService clasesService) async {
-    final bool confirmacion = await showDialog(
+    final bool? confirmacion = await showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -154,7 +154,7 @@ class _ClaseCardState extends State<ClaseCard> {
       },
     );
 
-    if (confirmacion) {
+    if (confirmacion == true) {
       await clasesService.deleteClase(clase);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Clase eliminada correctamente')),

@@ -88,6 +88,7 @@ class UsuariosService extends ChangeNotifier {
   Future<String> updateUsuario(Usuario usuario) async {
     final url = Uri.https(_baseURL, 'usuarios/${usuario.id}.json');
     final resp = await http.put(url, body: usuario.toJson());
+    // ignore: unused_local_variable
     final decodedData = resp.body;
     return usuario.id!;
   }
@@ -96,6 +97,7 @@ class UsuariosService extends ChangeNotifier {
     final url = Uri.https(_baseURL, 'usuarios/$id.json');
 
     final resp = await http.patch(url, body: jsonEncode({'rol': nuevoRol}));
+    // ignore: unused_local_variable
     final decodedData = resp.body;
 
     return id;
