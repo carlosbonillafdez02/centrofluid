@@ -5,7 +5,6 @@ import 'package:fl_centro_fluid/models/models.dart';
 import 'package:fl_centro_fluid/services/services.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:fl_centro_fluid/screens/screens.dart';
 
 class ClasesCalendario extends StatefulWidget {
   const ClasesCalendario({Key? key}) : super(key: key);
@@ -21,8 +20,6 @@ class _ClasesCalendarioState extends State<ClasesCalendario> {
   final RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.disabled;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  //List<Sesion> _sesionesDia = [];
-  //late SesionesServices _sesionesServices = SesionesServices();
   late ClasesService _clasesServices = ClasesService();
 
   @override
@@ -35,8 +32,6 @@ class _ClasesCalendarioState extends State<ClasesCalendario> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _clasesServices = Provider.of<ClasesService>(context);
-
-    //usuarioActivo = Provider.of<ConnectedUserProvider>(context).activeUser;
     _selectedSchedule = ValueNotifier(_cargarClasesDia(_selectedDay!));
   }
 
@@ -70,7 +65,6 @@ class _ClasesCalendarioState extends State<ClasesCalendario> {
     return Expanded(
         child: RefreshIndicator(
       onRefresh: () async {
-        // Aquí puedes colocar el código para recargar los datos, como cargar las clases del día actual
         _clasesServices.loadClases();
       },
       child: Column(
@@ -87,12 +81,6 @@ class _ClasesCalendarioState extends State<ClasesCalendario> {
             startingDayOfWeek: StartingDayOfWeek.monday,
             calendarStyle: CalendarStyle(
               outsideDaysVisible: false,
-              /*
-              outsideDecoration: BoxDecoration(
-                shape: BoxShape.circle,
-              ),
-              outsideTextStyle: TextStyle(color: Colors.black),
-              */
             ),
             headerStyle: const HeaderStyle(
               titleCentered: true,
@@ -115,8 +103,7 @@ class _ClasesCalendarioState extends State<ClasesCalendario> {
                           .circle, // Cambia la forma del fondo del día que tiene eventos
                     ),
                     child: Text(
-                      day.day
-                          .toString(), // Puedes mostrar el número del día o cualquier otro texto
+                      day.day.toString(),
                       style: const TextStyle(
                         color: Colors
                             .white, // Cambia el color del texto del día que tiene eventos
@@ -136,22 +123,27 @@ class _ClasesCalendarioState extends State<ClasesCalendario> {
             valueListenable: _selectedSchedule,
             builder: (context, clases, _) {
               if (clases.isEmpty) {
-                return Container(
-                    padding: const EdgeInsets.all(30.0),
-                    decoration: BoxDecoration(
-                        color: AppTheme.primary,
-                        borderRadius: BorderRadius.circular(25),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 15,
-                            offset: Offset(0, 5),
-                          )
-                        ]),
-                    child: const Text(
-                      'Hoy no hay clases',
-                      style: TextStyle(color: Colors.white, fontSize: 20.0),
-                    ));
+                return Expanded(
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: Container(
+                        padding: const EdgeInsets.all(30.0),
+                        decoration: BoxDecoration(
+                            color: AppTheme.primary,
+                            borderRadius: BorderRadius.circular(25),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 15,
+                                offset: Offset(0, 5),
+                              )
+                            ]),
+                        child: const Text(
+                          'Hoy no hay clases',
+                          style: TextStyle(color: Colors.white, fontSize: 20.0),
+                        )),
+                  ),
+                );
               }
               return Expanded(
                 child: ListView.builder(

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static final Color primary = Colors.blue.shade300;
+  //static final Color primary = Colors.blue.shade300;
+  static final Color primary = Colors.teal.shade500;
 
   static final ThemeData lightTheme = ThemeData.light().copyWith(
     // Color del AppBar Theme
-    appBarTheme: AppBarTheme(color: primary, elevation: 0),
+    appBarTheme: AppBarTheme(color: primary, elevation: 0, titleTextStyle: TextStyle(color: Colors.white, fontSize: 22), iconTheme: IconThemeData(color: Colors.white)),
     listTileTheme: ListTileThemeData(iconColor: primary),
 
     //TextButton Theme
@@ -20,10 +21,10 @@ class AppTheme {
     //ElevateButton Theme
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: primary,
-        shape: const StadiumBorder(),
-        elevation: 5,
-      ),
+          backgroundColor: primary,
+          shape: const StadiumBorder(),
+          elevation: 5,
+          foregroundColor: Colors.white),
     ),
     //InputDecoration Theme
     inputDecorationTheme: InputDecorationTheme(
@@ -69,10 +70,10 @@ class AppTheme {
     //ElevateButton Theme
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: primary,
-        shape: const StadiumBorder(),
-        elevation: 5,
-      ),
+          backgroundColor: primary,
+          shape: const StadiumBorder(),
+          elevation: 5,
+          foregroundColor: Colors.white),
     ),
     //InputDecoration Theme
     inputDecorationTheme: InputDecorationTheme(

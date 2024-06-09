@@ -1,4 +1,3 @@
-import 'package:fl_centro_fluid/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_centro_fluid/models/models.dart';
 import 'package:fl_centro_fluid/services/services.dart';
@@ -138,7 +137,10 @@ class _CrearSesionState extends State<CrearSesion> {
   }
 
   Future<void> _mostrarDialogoAgregarEjercicio(Ejercicio ejercicio) async {
-    String repeticionesSeries = '';
+    final TextEditingController seriesController = TextEditingController();
+    final TextEditingController repeticionesController =
+        TextEditingController();
+
     await showDialog(
       context: context,
       builder: (context) {
@@ -147,12 +149,20 @@ class _CrearSesionState extends State<CrearSesion> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Repeticiones/Series:'),
+              Text('Series:'),
               TextFormField(
-                onChanged: (value) => repeticionesSeries = value,
+                controller: seriesController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  hintText: 'Ingrese las repeticiones/series',
+                  hintText: 'Ingrese el número de series',
+                ),
+              ),
+              Text('Repeticiones:'),
+              TextFormField(
+                controller: repeticionesController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Ingrese el número de repeticiones',
                 ),
               ),
             ],
@@ -166,6 +176,8 @@ class _CrearSesionState extends State<CrearSesion> {
             ),
             TextButton(
               onPressed: () {
+                final repeticionesSeries =
+                    '${seriesController.text} series X ${repeticionesController.text} repeticiones';
                 _agregarEjercicio(ejercicio, repeticionesSeries);
                 Navigator.of(context).pop();
               },
@@ -191,7 +203,7 @@ class _CrearSesionState extends State<CrearSesion> {
       sesionesService.createSesion(nuevaSesion).then((_) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Ejercicio creado correctamente'),
+            content: Text('Sesión creada correctamente'),
           ),
         );
         _sesionNombreController.clear();
@@ -204,16 +216,12 @@ class _CrearSesionState extends State<CrearSesion> {
           ),
         );
       });
-      // Aquí puedes guardar la nueva sesión o hacer lo que necesites con ella
-      // Por ejemplo, puedes llamar a un servicio para guardarla en la base de datos
-      //SesionesService().createSesion(nuevaSesion);
-      // Luego puedes navegar a la pantalla de detalle de la sesión, por ejemplo:
-      //Navigator.push(context, MaterialPageRoute(builder: (context) = DetalleSesionScreen(sesion: nuevaSesion)));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-              'Por favor ingresa un nombre a la sesión y asegúrate de tener al menos un ejercicio seleccionado.'),
+            'Por favor ingresa un nombre a la sesión y asegúrate de tener al menos un ejercicio seleccionado.',
+          ),
         ),
       );
     }

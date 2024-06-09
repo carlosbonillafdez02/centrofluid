@@ -51,18 +51,49 @@ class _ModificarSesionState extends State<ModificarSesion> {
                 itemCount: _ejerciciosModificados.length,
                 itemBuilder: (context, index) {
                   final ejercicio = _ejerciciosModificados[index];
+                  final TextEditingController seriesController =
+                      TextEditingController();
+                  final TextEditingController repeticionesController =
+                      TextEditingController();
+
+                  // Desglosar repeticiones y series si están disponibles
+                  if (ejercicio.repeticionesSeries.contains('series X')) {
+                    final parts =
+                        ejercicio.repeticionesSeries.split('series X');
+                    if (parts.length == 2) {
+                      seriesController.text = parts[0].trim();
+                      repeticionesController.text =
+                          parts[1].trim().replaceAll('repeticiones', '').trim();
+                    }
+                  }
+
                   return ListTile(
                     title: Text(ejercicio.nombre),
-                    subtitle: TextFormField(
-                      initialValue: ejercicio.repeticionesSeries,
-                      onChanged: (value) {
-                        _ejerciciosModificados[index].repeticionesSeries =
-                            value;
-                      },
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Repeticiones/Series',
-                      ),
+                    subtitle: Column(
+                      children: [
+                        TextFormField(
+                          controller: seriesController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Series',
+                          ),
+                          onChanged: (value) {
+                            _ejerciciosModificados[index].repeticionesSeries =
+                                '$value series X ${repeticionesController.text} repeticiones';
+                          },
+                        ),
+                        TextFormField(
+                          controller: repeticionesController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Repeticiones',
+                          ),
+                          onChanged: (value) {
+                            _ejerciciosModificados[index].repeticionesSeries =
+                                '${seriesController.text} series X $value repeticiones';
+                          },
+                        ),
+                      ],
                     ),
                   );
                 },

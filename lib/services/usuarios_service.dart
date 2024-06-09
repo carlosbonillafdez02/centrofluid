@@ -44,22 +44,24 @@ class UsuariosService extends ChangeNotifier {
 
   // Devuelve una lista de usuarios que son entrenadores
   Future<List<Usuario>> loadEntrenadores() async {
-    isLoading = true;
-    notifyListeners();
+    List<Usuario> entrenadores;
+    if (isLoading) {
+      loadUsuarios();
+    }
+    entrenadores =
+        usuarios.where((usuario) => usuario.rol == "entrenador").toList();
+    return entrenadores;
+  }
 
-    final url = Uri.https(_baseURL, 'usuarios.json');
-    final resp = await http.get(url);
-
-    final Map<String, dynamic> usuariosMap = json.decode(resp.body);
-
-    usuariosMap.forEach((key, value) {
-      final tempUser = Usuario.fromMap(value);
-    });
-
-    isLoading = false;
-    notifyListeners();
-    //print(usuarios.toString());
-    return usuarios;
+  // Devuelve una lista de usuarios que son clientes
+  Future<List<Usuario>> loadClientes() async {
+    List<Usuario> entrenadores;
+    if (isLoading) {
+      loadUsuarios();
+    }
+    entrenadores =
+        usuarios.where((usuario) => usuario.rol != "entrenador").toList();
+    return entrenadores;
   }
 
   Future<Usuario?> getUsuarioByEmail(String email) async {
@@ -74,21 +76,19 @@ class UsuariosService extends ChangeNotifier {
     }
   }
 
-  Future<Usuario?> getUsuarioById(String id) async {
-    List<Usuario> users = await loadUsuarios();
-    var filteredUsers = users.where((u) => u.id == id);
-    if (filteredUsers.isNotEmpty) {
-      return filteredUsers.first;
-    } else {
-      return null;
+  Future<Usuario> getUsuarioById(String id) async {
+    if (isLoading) {
+      await loadUsuarios();
     }
+    var filteredUsers = usuarios.where((u) => u.id == id);
+
+    return filteredUsers.first;
   }
 
   Future<String> updateUsuario(Usuario usuario) async {
     final url = Uri.https(_baseURL, 'usuarios/${usuario.id}.json');
     final resp = await http.put(url, body: usuario.toJson());
     final decodedData = resp.body;
-
     return usuario.id!;
   }
 
@@ -124,25 +124,24 @@ class UsuariosService extends ChangeNotifier {
     final resp = await http.post(url, body: usuario.toJson());
     return resp.body;
   }
-  /*Future<String> saveUsuario(Map<String, dynamic> data) async {
-    final url = Uri.parse(
-        'https://cuidadog-f1d5d-default-rtdb.europe-west1.firebasedatabase.app/usuarios.json');
-    try {
-      final response = await http.post(
-        url,
-        body: json.encode(data),
-      );
 
-      if (response.statusCode == 200) {
-        print('Datos insertados correctamente');
-        return response.body;
-      } else {
-        print('Error al insertar datos: ${response.statusCode}');
-        return '';
+  List<Usuario> ordenarUsuarios(List<Usuario> lista) {
+    lista.sort((a, b) {
+      // Comparamos los nombres ignorando las diferencias entre mayúsculas y minúsculas
+      int compareNames =
+          a.nombre.toLowerCase().compareTo(b.nombre.toLowerCase());
+
+      // Si los nombres son iguales, comparamos los apellidos (si existen)
+      if (compareNames == 0) {
+        // Si uno de los apellidos es null, lo tratamos como cadena vacía
+        String apellidoA = a.apellido ?? "";
+        String apellidoB = b.apellido ?? "";
+        // Comparamos los apellidos ignorando las diferencias entre mayúsculas y minúsculas
+        return apellidoA.toLowerCase().compareTo(apellidoB.toLowerCase());
       }
-    } catch (error) {
-      print('Error al insertar datos: $error');
-      return '';
-    }
-  }*/
+
+      return compareNames;
+    });
+    return lista;
+  }
 }

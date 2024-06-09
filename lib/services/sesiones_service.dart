@@ -62,10 +62,8 @@ class SesionesService extends ChangeNotifier {
       );
 
       if (resp.statusCode == 200) {
-        // Si la solicitud se completó correctamente, puedes actualizar la lista de sesiones o hacer cualquier otra acción necesaria.
-        // Por ejemplo, si deseas cargar las sesiones actualizadas después de agregar una nueva, puedes llamar a loadSesiones() nuevamente.
         this.sesiones.add(sesion);
-        // También puedes notificar a los listeners que las sesiones han sido actualizadas.
+        // Notificar a los listeners que las sesiones han sido actualizadas.
         notifyListeners();
       } else {
         // Manejar la respuesta en caso de que no se haya podido crear la sesión.
@@ -87,12 +85,10 @@ class SesionesService extends ChangeNotifier {
       );
 
       if (resp.statusCode == 200) {
-        // Si la solicitud se completó correctamente, puedes actualizar la lista de sesiones o hacer cualquier otra acción necesaria.
-        // Por ejemplo, si deseas cargar las sesiones actualizadas después de modificar una, puedes llamar a loadSesiones() nuevamente.
         final index = sesiones.indexWhere((s) => s.id == sesion.id);
         if (index != -1) {
           sesiones[index] = sesion;
-          // También puedes notificar a los listeners que las sesiones han sido actualizadas.
+          // Notificar a los listeners que las sesiones han sido actualizadas.
           notifyListeners();
         } else {
           throw Exception(
@@ -115,10 +111,8 @@ class SesionesService extends ChangeNotifier {
       final resp = await http.delete(url);
 
       if (resp.statusCode == 200) {
-        // Si la solicitud se completó correctamente, puedes actualizar la lista de sesiones o hacer cualquier otra acción necesaria.
-        // Por ejemplo, si deseas cargar las sesiones actualizadas después de eliminar una, puedes llamar a loadSesiones() nuevamente.
         sesiones.removeWhere((s) => s.id == sesion.id);
-        // También puedes notificar a los listeners que las sesiones han sido actualizadas.
+        // Notificar a los listeners que las sesiones han sido actualizadas.
         notifyListeners();
       } else {
         // Manejar la respuesta en caso de que no se haya podido eliminar la sesión.

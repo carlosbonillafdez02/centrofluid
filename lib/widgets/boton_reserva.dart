@@ -46,18 +46,15 @@ class _BotonReservaState extends State<BotonReserva> {
     }
 
     return ElevatedButton(
-      onPressed: () {
-        if (widget.clase.listaClientes.length <
-            widget.clase.capacidadClientes) {
-          clasesService.realizarReservaClase(
-              widget.clase.id!, usuario.id!);
+      onPressed: () async {
+        if (await clasesService.realizarReservaClase(
+            widget.clase.id!, usuario.id!)) {
           setState(() {});
           mostrarDialogo(
               "Reserva realizada", "Has hecho una reserva en esta clase");
-        } // Actualiza el widget cuando cambia el estado
-        else {
-          mostrarDialogo("No se ha podido realizar la reserva",
-              "La clase está llena, pruebe a reservar otra clase");
+        } else {
+          mostrarDialogo("Error al reservar",
+              "La clase está llena, pruebe a reservar otra clase. Recarga la pantalla para ver las clases actualizadas.");
         }
       },
       child: Text(

@@ -40,4 +40,11 @@ class Clase {
             : null, // Verifica si listaClientes está vacía antes de incluirla en JSON
         "sesion": sesion,
       };
+
+  // Comprueba si dos fechas son el mismo día
+  bool isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
 }

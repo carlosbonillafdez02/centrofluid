@@ -5,21 +5,21 @@ import 'package:fl_centro_fluid/models/models.dart';
 import 'package:fl_centro_fluid/services/services.dart';
 import 'package:provider/provider.dart';
 
-class SesionCard extends StatelessWidget {
-  final Sesion sesion;
+class GrupoCard extends StatelessWidget {
+  final Grupo grupo;
   final VoidCallback onTap;
   final bool isSelected;
 
-  const SesionCard(
-      {Key? key,
-      required this.sesion,
-      required this.onTap,
-      required this.isSelected})
-      : super(key: key);
+  const GrupoCard({
+    Key? key,
+    required this.grupo,
+    required this.onTap,
+    required this.isSelected,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final ejerciciosService = Provider.of<EjerciciosService>(context);
+    final usuariosService = Provider.of<UsuariosService>(context);
 
     return GestureDetector(
       onTap: onTap,
@@ -38,37 +38,37 @@ class SesionCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${sesion.nombre}',
+                grupo.nombre,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               ExpansionTile(
-                title: Text('Ejercicios (${sesion.ejercicios.length})'),
+                title: Text('Clientes (${grupo.listaClientes.length})'),
                 children: [
-                  ...sesion.ejercicios.map((ejer) {
+                  ...grupo.listaClientes.map((userId) {
                     return Padding(
                       padding: EdgeInsets.symmetric(vertical: 3),
-                      child: FutureBuilder<Ejercicio>(
-                        future: ejerciciosService.getEjercicioById(ejer.id),
+                      child: FutureBuilder<Usuario>(
+                        future: usuariosService.getUsuarioById(userId),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.done) {
-                            final ejercicio = snapshot.data;
-                            return EjercicioCard(
-                              ejercicio: ejercicio!,
-                              onTap: () {},
-                              isSelected: false,
-                            );
+                            final usuario = snapshot.data;
+                            if (usuario == null) {
+                              return Text('Usuario no encontrado');
+                            }
+                            return UsuarioCard(usuario: usuario);
                           } else {
-                            // Muestra un indicador de carga mientras se obtiene el ejercicio
+                            // Muestra un indicador de carga mientras se obtiene el usuario
                             return Center(
-                                child: CircularProgressIndicator(
-                              color: AppTheme.primary,
-                            ));
+                              child: CircularProgressIndicator(
+                                color: AppTheme.primary,
+                              ),
+                            );
                           }
                         },
                       ),
                     );
-                  }),
+                  }).toList(),
                 ],
               ),
             ],

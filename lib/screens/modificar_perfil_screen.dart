@@ -112,8 +112,7 @@ class _ModificarPerfilScreenState extends State<ModificarPerfilScreen> {
       UsuariosService actualizar = UsuariosService();
       actualizar.updateUsuario(_usuario);
       // Notifica a los widgets que escuchan el ConnectedUserProvider que los datos del usuario han cambiado
-      Provider.of<ConnectedUserProvider>(context);
-      // ...
+      Provider.of<ConnectedUserProvider>(context, listen: false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Perfil actualizado correctamente'),

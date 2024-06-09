@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fl_centro_fluid/screens/screens.dart';
+import 'package:fl_centro_fluid/models/models.dart';
+import 'package:fl_centro_fluid/providers/providers.dart';
+import 'package:provider/provider.dart';
 
 class MyBottomNavBar extends StatefulWidget {
+  final int? index;
+
+  MyBottomNavBar({super.key, this.index});
   @override
   _MyBottomNavBarState createState() => _MyBottomNavBarState();
 }
@@ -13,8 +19,13 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
     HomeScreen(),
     ReservaScreen(),
     PerfilScreen(),
-    MenuScreen(),
+    AdminScreen(),
   ];
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.index ?? 0;
+  }
 
   void onTabTapped(int index) {
     setState(() {
@@ -24,6 +35,8 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
 
   @override
   Widget build(BuildContext context) {
+    final Usuario usuario =
+        Provider.of<ConnectedUserProvider>(context).activeUser;
     return Scaffold(
       body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -42,41 +55,13 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
             icon: Icon(Icons.person),
             label: 'Perfil',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu),
-            label: 'Menú',
-          ),
+          if (usuario.rol == 'entrenador')
+            BottomNavigationBarItem(
+              icon: Icon(Icons.admin_panel_settings),
+              label: 'Administración',
+            ),
         ],
       ),
     );
   }
 }
-
-
-/*
-  int _currentIndex = 0;
-  
-  void onTabTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('BottomNavigationBar Demo'),
-      ),
-      
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: onTabTapped,
-        items: AppRoutes.menuOptions.map((option) => BottomNavigationBarItem(
-          icon: Icon(option.icon),
-          label: option.name,
-        )).toList(),
-      ),
-    );
-  }
-}*/

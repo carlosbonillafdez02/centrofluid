@@ -4,8 +4,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ThemeProvider with ChangeNotifier {
   bool _isDarkMode = false;
   static const String _themeKey = 'theme_preference';
+  late SharedPreferences _prefs; // Declare SharedPreferences variable
 
-  ThemeProvider() {
+  // Define el constructor para aceptar SharedPreferences
+  ThemeProvider({required SharedPreferences prefs}) {
+    _prefs = prefs; // Initialize SharedPreferences variable
     _loadTheme();
   }
 
@@ -18,13 +21,11 @@ class ThemeProvider with ChangeNotifier {
   }
 
   Future<void> _loadTheme() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    _isDarkMode = prefs.getBool(_themeKey) ?? false;
+    _isDarkMode = _prefs.getBool(_themeKey) ?? false;
     notifyListeners();
   }
 
   Future<void> _saveTheme() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(_themeKey, _isDarkMode);
+    _prefs.setBool(_themeKey, _isDarkMode);
   }
 }

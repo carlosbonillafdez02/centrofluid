@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:fl_centro_fluid/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -41,6 +40,17 @@ class ClasesService extends ChangeNotifier {
     return this.clases;
   }
 
+  Future<Clase> getClaseById(String id) async {
+    final url = Uri.https(_baseURL, 'clases/$id.json');
+    final resp = await http.get(url);
+
+    final Map<String, dynamic> claseMap = json.decode(resp.body);
+
+    final clase = Clase.fromJson(claseMap);
+
+    return clase;
+  }
+
   List<Clase> getClasesDia(DateTime fecha) {
     List<Clase> clasesDia = [];
     if (clases.isNotEmpty) {
@@ -56,16 +66,61 @@ class ClasesService extends ChangeNotifier {
     return clasesDia;
   }
 
-  Future<void> realizarReservaClase(String claseId, String usuarioId) async {
-    final claseIndex = clases.indexWhere((clase) => clase.id == claseId);
-    if (claseIndex != -1) {
-      clases[claseIndex].listaClientes.add(usuarioId);
+  Future<bool> realizarReservaClase(String claseId, String usuarioId) async {
+    final Clase? clase = await getClaseById(claseId);
+
+    // Verifica que la clase no sea nula
+    if (clase == null) {
+      return false; // Devuelve `false` si no se encuentra la clase
+    }
+
+    // Verifica la capacidad de la clase y si se puede añadir el usuario
+    if (clase.capacidadClientes > clase.listaClientes.length) {
+      clase.listaClientes.add(usuarioId);
       notifyListeners();
 
-      final url = Uri.https(_baseURL, 'clases/$claseId.json');
+      final url =
+          Uri.https(_baseURL, 'clases/$claseId.json', {'auth': _firebaseToken});
       await http.patch(url,
-          body:
-              json.encode({'listaClientes': clases[claseIndex].listaClientes}));
+          body: json.encode({'listaClientes': clase.listaClientes}));
+
+      // posición donde se encuentra la clase en la lista
+      final index = clases.indexWhere((element) => element.id == claseId);
+      clases[index].listaClientes.add(usuarioId);
+      notifyListeners();
+
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> cancelarReservaClase(String claseId, String usuarioId) async {
+    final Clase? clase = await getClaseById(claseId);
+
+    // Verifica que la clase no sea nula
+    if (clase == null) {
+      return false;
+    }
+
+    // Verifica si el usuario está en la lista de clientes
+    if (clase.listaClientes.contains(usuarioId)) {
+      clase.listaClientes.remove(usuarioId);
+      notifyListeners();
+
+      final url =
+          Uri.https(_baseURL, 'clases/$claseId.json', {'auth': _firebaseToken});
+      await http.patch(url,
+          body: json.encode({'listaClientes': clase.listaClientes}));
+
+      // posición donde se encuentra la clase en la lista
+      final index = clases.indexWhere((element) => element.id == claseId);
+      clases[index].listaClientes.remove(usuarioId);
+      notifyListeners();
+
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -93,5 +148,84 @@ class ClasesService extends ChangeNotifier {
       // Manejar errores de red u otros errores
       throw Exception('Error al crear la clase: $error');
     }
+  }
+
+  Future<void> deleteClase(Clase clase) async {
+    final url = Uri.https(
+        _baseURL, 'clases/${clase.id}.json', {'auth': _firebaseToken});
+    await http.delete(url);
+
+    clases.removeWhere((element) => element.id == clase.id);
+    notifyListeners();
+  }
+
+  Future<List<Clase>> getAllClasesActuales() async {
+    List<Clase> clienteClases = [];
+    DateTime now = DateTime.now();
+
+    for (Clase clase in clases) {
+      if (clase.fecha.isAfter(now) || clase.isSameDay(now, clase.fecha)) {
+        clienteClases.add(clase);
+      }
+    }
+
+    // Ordenar las clases por fecha (de más recientes a menos recientes)
+    clienteClases.sort((a, b) => a.fecha.compareTo(b.fecha));
+
+    return clienteClases;
+  }
+
+  Future<List<Clase>> getAllClasesPasadas() async {
+    List<Clase> clienteClases = [];
+    DateTime now = DateTime.now();
+    for (Clase clase in clases) {
+      if (clase.fecha.isBefore(now) && !clase.isSameDay(now, clase.fecha)) {
+        clienteClases.add(clase);
+      }
+    }
+
+    // Ordenar las clases por fecha (de más recientes a menos recientes)
+    clienteClases.sort((a, b) => b.fecha.compareTo(a.fecha));
+
+    return clienteClases;
+  }
+
+  Future<List<Clase>> getClienteClasesActuales(String idUsuario) async {
+    List<Clase> clienteClases = [];
+    DateTime now = DateTime.now();
+
+    for (Clase clase in clases) {
+      if (clase.listaClientes.contains(idUsuario)) {
+        if (clase.fecha.isAfter(now) || clase.isSameDay(now, clase.fecha)) {
+          clienteClases.add(clase);
+        }
+      }
+    }
+
+    // Ordenar las clases por fecha (de más recientes a menos recientes)
+    clienteClases.sort((a, b) => a.fecha.compareTo(b.fecha));
+
+    return clienteClases;
+  }
+
+  Future<List<Clase>> getClienteClasesPasadas(String idUsuario) async {
+    List<Clase> clienteClases = [];
+    DateTime now = DateTime.now();
+    for (Clase clase in clases) {
+      if (clase.listaClientes.contains(idUsuario)) {
+        if (clase.fecha.isBefore(now) && !clase.isSameDay(now, clase.fecha)) {
+          clienteClases.add(clase);
+        }
+      }
+    }
+
+    // Ordenar las clases por fecha (de más recientes a menos recientes)
+    clienteClases.sort((a, b) => b.fecha.compareTo(a.fecha));
+
+    return clienteClases;
+  }
+
+  bool isReservedByClient(Clase clase, String idUsuario) {
+    return clase.listaClientes.contains(idUsuario);
   }
 }

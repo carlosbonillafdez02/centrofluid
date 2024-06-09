@@ -7,7 +7,6 @@ import 'package:fl_centro_fluid/services/usuarios_service.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_centro_fluid/models/usuario.dart';
 import 'package:fl_centro_fluid/theme/app_theme.dart';
-import 'package:fl_centro_fluid/providers/providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PerfilScreen extends StatefulWidget {
@@ -23,12 +22,15 @@ class _PerfilScreenState extends State<PerfilScreen> {
   @override
   Widget build(BuildContext context) {
     final usuariosServices = Provider.of<UsuariosService>(context);
-    final Usuario usuario =
-        Provider.of<ConnectedUserProvider>(context).activeUser;
+    final ConnectedUserProvider connectedUserProvider =
+        Provider.of<ConnectedUserProvider>(context);
+    final Usuario usuario = connectedUserProvider.activeUser;
     final String userEmail = usuario.email;
     final themeProvider = Provider.of<ThemeProvider>(context);
+    usuario.fotoPerfil ??= ""; // para no tener fotoPerfil null
 
     if (usuariosServices.isLoading) return LoadingScreen();
+
     return FutureBuilder<Usuario?>(
       future: usuariosServices.getUsuarioByEmail(userEmail),
       builder: (context, snapshot) {
@@ -48,15 +50,26 @@ class _PerfilScreenState extends State<PerfilScreen> {
                     Center(
                       child: Stack(
                         children: [
-                          CircleAvatar(
-                            radius: 70,
-                            backgroundColor: Colors.grey[300],
-                            backgroundImage: (usuario.fotoPerfil != null &&
-                                    usuario.fotoPerfil!.isNotEmpty)
-                                // ? FileImage(File(usuario.fotoPerfil!))
-                                ? NetworkImage(usuario.fotoPerfil!)
-                                : null,
-                          ),
+                          if (usuario.fotoPerfil!.isNotEmpty)
+                            CircleAvatar(
+                              radius: 70,
+                              backgroundColor: Colors.grey[300],
+                              backgroundImage: (usuario.fotoPerfil!.isNotEmpty)
+                                  ? FileImage(File(usuario.fotoPerfil!))
+                                  : null,
+                            )
+                          else
+                            CircleAvatar(
+                              radius: 70,
+                              backgroundColor: AppTheme.primary,
+                              child: Text(
+                                '${usuario.nombre[0].toUpperCase()}${usuario.apellido?[0].toUpperCase() ?? ''}',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 60,
+                                ),
+                              ),
+                            ),
                           Positioned(
                             bottom: 0,
                             right: 0,
@@ -71,7 +84,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
                                   final XFile? selectedImage = await _picker
                                       .pickImage(source: ImageSource.gallery);
                                   if (selectedImage != null) {
-                                    // Update the user's image path in the database
                                     await usuariosServices.updateUserFotoPerfil(
                                         usuario.id!, selectedImage.path);
                                     setState(() {
@@ -121,22 +133,41 @@ class _PerfilScreenState extends State<PerfilScreen> {
                             builder: (context) =>
                                 ModificarPerfilScreen(usuario: usuario),
                           ),
-                        );
+                        ).then((_) {
+                          setState(() {
+                            // Force rebuild to reflect changes
+                          });
+                        });
                       },
                     ),
                     SizedBox(height: 20),
-                    Center(
-                      child: Column(
-                        children: [
-                          Text('Modo oscuro:'),
-                          Switch(
-                            value: themeProvider.isDarkMode,
-                            onChanged: (value) {
-                              themeProvider.toggleTheme();
-                            },
-                          ),
-                        ],
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Modo oscuro  ',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 15),
+                            ),
+                            Switch(
+                              value: themeProvider.isDarkMode,
+                              onChanged: (value) {
+                                themeProvider.toggleTheme();
+                              },
+                            ),
+                          ],
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red.shade400),
+                          child: Text('Cerrar sesión'),
+                          onPressed: () async {
+                            await _logout(context);
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -150,17 +181,13 @@ class _PerfilScreenState extends State<PerfilScreen> {
     );
   }
 
-  Widget _buildInfoField(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child: Text(
-        '$label: $value',
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-    );
+  Future<void> _logout(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('user');
+    await prefs.remove('password');
+
+    Provider.of<ConnectedUserProvider>(context, listen: false).logout();
+
+    Navigator.pushNamedAndRemoveUntil(context, 'login', (route) => false);
   }
 }

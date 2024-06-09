@@ -3,6 +3,7 @@ import 'package:fl_centro_fluid/models/models.dart';
 import 'package:fl_centro_fluid/services/services.dart';
 import 'package:fl_centro_fluid/screens/screens.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class CrearClase extends StatefulWidget {
   const CrearClase({Key? key}) : super(key: key);
@@ -12,66 +13,42 @@ class CrearClase extends StatefulWidget {
 }
 
 class _CrearClaseState extends State<CrearClase> {
-  //late final UsuariosService usuariosService;
-  //late final SesionesService sesionesService;
-
   late List<Usuario> _usuarios = [];
   late Usuario _entrenadorSeleccionado =
       Usuario(email: "", nombre: "", telefono: "");
   late List<Sesion> _sesiones = [];
   late Sesion _sesionSeleccionada = Sesion(ejercicios: [], nombre: "");
 
+  late List<Grupo> _grupos = [];
+  late Grupo _grupoSeleccionado = Grupo(listaClientes: [], nombre: "");
+
   final _capacidadClientesController = TextEditingController();
   final _sesionController = TextEditingController();
-  final _listaClientesController = TextEditingController();
 
   DateTime? _selectedDateTime;
 
   @override
   void initState() {
     super.initState();
-    //usuariosService = Provider.of<UsuariosService>(context);
-    //sesionesService = Provider.of<SesionesService>(context);
-
-    //_loadUsuarios();
-    //_loadSesiones();
-    //print(usuariosService.isLoading);
-    //print(sesionesService.isLoading);
   }
-/*
-  Future<void> _loadUsuarios() async {
-    //final usuarios = await usuariosService.loadUsuarios();
-    _usuarios = usuariosService.usuarios;
-    setState(() {
-      // Seleccionar el primer usuario por defecto
-      _entrenadorSeleccionado = _usuarios.isNotEmpty
-          ? _usuarios[0]
-          : Usuario(email: "", nombre: "", telefono: "");
-    });
-  }
-
-  Future<void> _loadSesiones() async {
-    //final sesiones = await sesionesService.loadSesiones();
-    _sesiones = sesionesService.sesiones;
-    setState(() {
-      _sesionSeleccionada = _sesiones.isNotEmpty
-          ? _sesiones[0]
-          : Sesion(ejercicios: [], nombre: "");
-    });
-  }
-*/
 
   @override
   Widget build(BuildContext context) {
     final usuariosService = Provider.of<UsuariosService>(context);
     final sesionesService = Provider.of<SesionesService>(context);
-    if (usuariosService.isLoading || sesionesService.isLoading) {
+    final gruposService = Provider.of<GruposService>(context);
+    if (usuariosService.isLoading ||
+        sesionesService.isLoading ||
+        gruposService.isLoading) {
       return LoadingScreen();
     } else {
       _sesiones = sesionesService.sesiones;
-      _usuarios = usuariosService.usuarios;
+      _usuarios =
+          usuariosService.usuarios.where((u) => u.rol == "entrenador").toList();
       _entrenadorSeleccionado = _usuarios[0];
       _sesionSeleccionada = _sesiones[0];
+      _grupos = gruposService.grupos;
+      _grupoSeleccionado = _grupos[0];
       return Scaffold(
         appBar: AppBar(
           title: Text('Crear Clase'),
@@ -99,11 +76,7 @@ class _CrearClaseState extends State<CrearClase> {
                 SizedBox(height: 8),
                 _buildSesionDropdown(),
                 SizedBox(height: 8),
-                TextFormField(
-                  controller: _listaClientesController,
-                  decoration: InputDecoration(
-                      labelText: 'Lista de clientes (a lo mejor sobra)'),
-                ),
+                _buildGrupoDropdown(),
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _crearClase,
@@ -133,7 +106,7 @@ class _CrearClaseState extends State<CrearClase> {
             "${_entrenadorSeleccionado.nombre} ${_entrenadorSeleccionado.apellido}",
         fecha: fecha,
         sesion: sesion,
-        listaClientes: [],
+        listaClientes: _grupoSeleccionado.listaClientes,
       );
 
       final clasesService = ClasesService();
@@ -179,7 +152,7 @@ class _CrearClaseState extends State<CrearClase> {
         SizedBox(height: 8),
         _selectedDateTime != null
             ? Text(
-                '${_selectedDateTime!.toLocal()}',
+                DateFormat('dd/MM/yyyy   HH:mm').format(_selectedDateTime!),
                 style: TextStyle(fontSize: 16),
               )
             : SizedBox(),
@@ -267,6 +240,37 @@ class _CrearClaseState extends State<CrearClase> {
           decoration: InputDecoration(
             border: OutlineInputBorder(),
             hintText: 'Seleccionar sesión',
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGrupoDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Grupo:',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 8),
+        DropdownButtonFormField<Grupo>(
+          value: _grupoSeleccionado,
+          items: _grupos.map((grupo) {
+            return DropdownMenuItem<Grupo>(
+              value: grupo,
+              child: Text(grupo.nombre),
+            );
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              _grupoSeleccionado = value!;
+            });
+          },
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            hintText: 'Seleccionar grupo',
           ),
         ),
       ],

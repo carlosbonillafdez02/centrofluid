@@ -1,7 +1,7 @@
+import 'package:fl_centro_fluid/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_centro_fluid/models/models.dart';
 import 'package:fl_centro_fluid/providers/providers.dart';
-import 'package:fl_centro_fluid/screens/screens.dart';
 import 'package:fl_centro_fluid/services/services.dart';
 import 'package:fl_centro_fluid/widgets/widgets.dart';
 import 'package:provider/provider.dart';
@@ -14,15 +14,17 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('AppBar ejemplo'),
+        title: Text('Registro'),
       ),
       // drawer: MiMenuDesplegable(),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Center(
-            child: ChangeNotifierProvider(
-              create: (_) => RegisterFormProvider(),
-              child: _RegisterForm(),
+          child: Container(
+            child: Center(
+              child: ChangeNotifierProvider(
+                create: (_) => RegisterFormProvider(),
+                child: _RegisterForm(),
+              ),
             ),
           ),
         ),
@@ -89,14 +91,19 @@ class _RegisterForm extends StatelessWidget {
         children: [
           const SizedBox(height: 40),
           // Logo
-          const Icon(
-            Icons.pets,
-            size: 100,
+          Image.asset(
+            'assets/logo-centro.png',
+            width: 180,
+            height: 180,
+            fit: BoxFit.contain,
           ),
           const SizedBox(height: 40),
-          const Text(
-            "Bienvenido a fl_centro_fluid",
-            style: TextStyle(fontSize: 16),
+          Text(
+            "Bienvenido/a a Centro Fluid",
+            style: TextStyle(
+                fontSize: 24,
+                color: AppTheme.primary,
+                fontWeight: FontWeight.bold),
           ),
 
           const SizedBox(height: 40),
@@ -248,7 +255,6 @@ class _RegisterForm extends StatelessWidget {
             text: registerForm.isLoading ? "Espere" : "Registrarse",
           ),
           const SizedBox(height: 30),
-
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Row(

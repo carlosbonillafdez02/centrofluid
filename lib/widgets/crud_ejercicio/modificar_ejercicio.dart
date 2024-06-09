@@ -15,7 +15,6 @@ class ModificarEjercicio extends StatefulWidget {
 class _ModificarEjercicioState extends State<ModificarEjercicio> {
   final TextEditingController nombreController = TextEditingController();
   final TextEditingController listaImagenesController = TextEditingController();
-  // Puedes agregar más controladores para otros campos del ejercicio si es necesario
 
   @override
   void initState() {
@@ -23,7 +22,6 @@ class _ModificarEjercicioState extends State<ModificarEjercicio> {
     // Llenar los controladores con los datos del ejercicio pasado como parámetro
     nombreController.text = widget.ejercicio.nombre;
     listaImagenesController.text = widget.ejercicio.listaImagenes.join(", ");
-    // Puedes hacer lo mismo para otros campos si es necesario
   }
 
   @override
@@ -51,7 +49,6 @@ class _ModificarEjercicioState extends State<ModificarEjercicio> {
               ),
             ),
             SizedBox(height: 20),
-            // Puedes agregar más campos de entrada para otros atributos del ejercicio si es necesario
             ElevatedButton(
               onPressed: () {
                 // Actualizar el ejercicio con los nuevos datos
@@ -59,7 +56,6 @@ class _ModificarEjercicioState extends State<ModificarEjercicio> {
                   id: widget.ejercicio.id,
                   nombre: nombreController.text,
                   listaImagenes: listaImagenesController.text.split(", "),
-                  // Puedes agregar más atributos del ejercicio si es necesario
                 );
 
                 // Actualizar el ejercicio en el servicio

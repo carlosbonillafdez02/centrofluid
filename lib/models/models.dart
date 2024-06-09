@@ -3,3 +3,4 @@ export 'menu_option.dart';
 export 'clase.dart';
 export 'sesion.dart';
 export 'usuario.dart';
+export 'grupo.dart';

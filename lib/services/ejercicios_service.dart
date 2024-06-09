@@ -45,7 +45,6 @@ class EjerciciosService extends ChangeNotifier {
     return this.ejercicios;
   }
 
-  // Aqui se debería manejar en caso de que no se encuentre el ejercicio
   Future<Ejercicio> getEjercicioById(String id) async {
     final url = Uri.https(_baseURL, 'ejercicios/$id.json');
     final resp = await http.get(url);
@@ -67,13 +66,11 @@ class EjerciciosService extends ChangeNotifier {
       );
 
       if (resp.statusCode == 200) {
-        // Si la solicitud se completó correctamente, puedes actualizar la lista de ejercicios o hacer cualquier otra acción necesaria.
-        // Por ejemplo, si deseas cargar los ejercicios actualizados después de agregar uno nuevo, puedes llamar a loadEjercicios() nuevamente.
         this.ejercicios.add(ejercicio);
         // Ordenar los ejercicios alfabéticamente
         ejercicios.sort(
             (a, b) => a.nombre.toLowerCase().compareTo(b.nombre.toLowerCase()));
-        // También puedes notificar a los listeners que los ejercicios han sido actualizados.
+        // Notificar a los listeners que los ejercicios han sido actualizados.
         notifyListeners();
       } else {
         // Manejar la respuesta en caso de que no se haya podido crear el ejercicio.
@@ -95,15 +92,13 @@ class EjerciciosService extends ChangeNotifier {
       );
 
       if (resp.statusCode == 200) {
-        // Si la solicitud se completó correctamente, puedes actualizar la lista de ejercicios o hacer cualquier otra acción necesaria.
-        // Por ejemplo, si deseas cargar los ejercicios actualizados después de modificar uno, puedes llamar a loadEjercicios() nuevamente.
         final index = ejercicios.indexWhere((e) => e.id == ejercicio.id);
         if (index != -1) {
           ejercicios[index] = ejercicio;
           // Ordenar los ejercicios alfabéticamente
           ejercicios.sort((a, b) =>
               a.nombre.toLowerCase().compareTo(b.nombre.toLowerCase()));
-          // También puedes notificar a los listeners que los ejercicios han sido actualizados.
+          // Notificar a los listeners que los ejercicios han sido actualizados.
           notifyListeners();
         } else {
           throw Exception(
@@ -127,10 +122,8 @@ class EjerciciosService extends ChangeNotifier {
       final resp = await http.delete(url);
 
       if (resp.statusCode == 200) {
-        // Si la solicitud se completó correctamente, puedes actualizar la lista de ejercicios o hacer cualquier otra acción necesaria.
-        // Por ejemplo, si deseas cargar los ejercicios actualizados después de eliminar uno, puedes llamar a loadEjercicios() nuevamente.
         ejercicios.removeWhere((e) => e.id == ejercicio.id);
-        // También puedes notificar a los listeners que los ejercicios han sido actualizados.
+        // Notificar a los listeners que los ejercicios han sido actualizados.
         notifyListeners();
       } else {
         // Manejar la respuesta en caso de que no se haya podido eliminar el ejercicio.

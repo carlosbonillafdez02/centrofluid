@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fl_centro_fluid/models/models.dart';
-import 'package:flutter_signin_button/button_list.dart';
-import 'package:flutter_signin_button/button_view.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:fl_centro_fluid/widgets/simple_button.dart';
-import 'package:fl_centro_fluid/widgets/password_text_field.dart';
-import 'package:fl_centro_fluid/providers/login_form_provider.dart';
-import 'package:fl_centro_fluid/providers/connected_user_provider.dart';
-import 'package:fl_centro_fluid/services/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fl_centro_fluid/models/models.dart';
+import 'package:fl_centro_fluid/providers/providers.dart';
+import 'package:fl_centro_fluid/screens/register_screen.dart';
+import 'package:fl_centro_fluid/services/services.dart';
+import 'package:fl_centro_fluid/widgets/widgets.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -18,22 +15,22 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.blue.shade900, Colors.blue.shade400],
-              ),
+      body: SingleChildScrollView(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.teal.shade900, Colors.teal.shade400],
             ),
-            padding: EdgeInsets.all(20.0),
-            child: Center(
-              child: ChangeNotifierProvider(
-                create: (_) => LoginFormProvider(),
-                child: _LoginForm(),
-              ),
+          ),
+          padding: EdgeInsets.all(20.0),
+          child: Center(
+            child: ChangeNotifierProvider(
+              create: (_) => LoginFormProvider(),
+              child: _LoginForm(),
             ),
           ),
         ),
@@ -82,7 +79,7 @@ class _LoginForm extends StatelessWidget {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('Credenciales Incorrectas, $errorMessage'),
+            title: Text('Usuario o contraseña incorrectos'),
           );
         },
       );
@@ -141,14 +138,15 @@ class _LoginForm extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 40),
-          const Icon(
-            Icons.pets,
-            size: 100,
-            color: Colors.white,
+          Image.asset(
+            'assets/logo-centro-invertido.png',
+            width: 180,
+            height: 180,
+            fit: BoxFit.contain,
           ),
           const SizedBox(height: 40),
           const Text(
-            "Texto loginscreen 151",
+            "Centro Fluid",
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -215,9 +213,9 @@ class _LoginForm extends StatelessWidget {
           const SizedBox(height: 30),
           SimpleButton(
             onTap: () => login(loginForm, context),
-            text: loginForm.isLoading ? "Espere" : "Login",
+            text: loginForm.isLoading ? "Espere" : "Iniciar sesión",
           ),
-          const SizedBox(height: 10),
+          /*const SizedBox(height: 10),
           SimpleButton(
             onTap: () => biometricLogin(loginForm, context),
             text: "Utilizar huella",
@@ -229,7 +227,7 @@ class _LoginForm extends StatelessWidget {
             onPressed: () {
               // Agrega aquí la funcionalidad para iniciar sesión con Google
             },
-          ),
+          ),*/
           const SizedBox(height: 30),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 25),
@@ -250,7 +248,14 @@ class _LoginForm extends StatelessWidget {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, 'registro'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RegisterScreen(),
+                      ),
+                    );
+                  },
                   child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     child: Text(
@@ -271,57 +276,9 @@ class _LoginForm extends StatelessWidget {
               ],
             ),
           ),
-          TextButton(
-            onPressed: () => onForgotPassword(loginForm.email, context),
-            child: Text(
-              "¿Olvidaste tu contraseña?",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-          const SizedBox(height: 30),
         ],
       ),
     );
-  }
-
-  Future<void> onForgotPassword(String email, BuildContext context) async {
-    final authService = Provider.of<AuthService>(context, listen: false);
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Loading...'),
-          content: CircularProgressIndicator(),
-        );
-      },
-    );
-
-    await authService.sendPasswordResetEmail(email);
-
-    Navigator.of(context).pop(); // Cierra el diálogo de carga
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Correo Enviado'),
-          content:
-              Text('Se le ha enviado un correo para restablecer su contraseña'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-
-    Navigator.of(context).pushNamed(
-        '/forgotPass'); // Navega a la página para restablecer la contraseña
   }
 }
 
