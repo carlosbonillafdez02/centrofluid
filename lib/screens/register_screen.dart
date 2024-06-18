@@ -33,11 +33,12 @@ class RegisterScreen extends StatelessWidget {
 }
 
 class _RegisterForm extends StatelessWidget {
-  void register(RegisterFormProvider registerForm, context) async {
+  void register(RegisterFormProvider registerForm, BuildContext context) async {
     if (registerForm.isLoading) return;
     FocusScope.of(context).unfocus();
     final authService = Provider.of<AuthService>(context, listen: false);
-    Provider.of<UsuariosService>(context, listen: false);
+    final usuariosService =
+        Provider.of<UsuariosService>(context, listen: false);
     if (!registerForm.isValidForm()) return;
 
     registerForm.isLoading = true;
@@ -45,7 +46,9 @@ class _RegisterForm extends StatelessWidget {
     final String? errorMessage =
         await authService.createUser(registerForm.email, registerForm.password);
     if (errorMessage == null) {
-      // String response = await usuariosService.saveUsuario(generateUsuario(registerForm));
+      Usuario newUser = generateUsuario(registerForm);
+      String response = await usuariosService.saveUsuario(newUser);
+      print(response); // Puedes imprimir la respuesta para depuración
       registerForm.isLoading = false;
       Navigator.pushReplacementNamed(context, 'login');
     } else {
@@ -206,7 +209,7 @@ class _RegisterForm extends StatelessWidget {
           ),
 
           const SizedBox(height: 10),
-          // Direccion
+          // Dirección
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25.0),
             child: TextFormField(
@@ -227,7 +230,7 @@ class _RegisterForm extends StatelessWidget {
 
           const SizedBox(height: 10),
 
-          // Codigo Postal
+          // Código Postal
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25.0),
             child: TextFormField(

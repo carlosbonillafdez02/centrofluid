@@ -13,100 +13,108 @@ class CrearClase extends StatefulWidget {
 }
 
 class _CrearClaseState extends State<CrearClase> {
-  late List<Usuario> _usuarios = [];
-  late Usuario _entrenadorSeleccionado =
-      Usuario(email: "", nombre: "", telefono: "");
-  late List<Sesion> _sesiones = [];
-  late Sesion _sesionSeleccionada = Sesion(ejercicios: [], nombre: "");
-
-  late List<Grupo> _grupos = [];
-  late Grupo _grupoSeleccionado = Grupo(listaClientes: [], nombre: "");
+  List<Usuario> _usuarios = [];
+  Usuario? _entrenadorSeleccionado;
+  List<Sesion> _sesiones = [];
+  Sesion? _sesionSeleccionada;
+  List<Grupo> _grupos = [];
+  Grupo? _grupoSeleccionado;
 
   final _capacidadClientesController = TextEditingController();
   final _sesionController = TextEditingController();
 
   DateTime? _selectedDateTime;
 
+  Future<void> _loadData(BuildContext context) async {
+    final usuariosService =
+        Provider.of<UsuariosService>(context, listen: false);
+    final sesionesService =
+        Provider.of<SesionesService>(context, listen: false);
+    final gruposService = Provider.of<GruposService>(context, listen: false);
+
+    await usuariosService.loadUsuarios();
+    await sesionesService.loadSesiones();
+    await gruposService.loadGrupos();
+
+    setState(() {
+      _usuarios =
+          usuariosService.usuarios.where((u) => u.rol == "entrenador").toList();
+      if (_usuarios.isNotEmpty) _entrenadorSeleccionado = _usuarios[0];
+      _sesiones = sesionesService.sesiones;
+      if (_sesiones.isNotEmpty) _sesionSeleccionada = _sesiones[0];
+      _grupos = gruposService.grupos;
+      if (_grupos.isNotEmpty) _grupoSeleccionado = _grupos[0];
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    // Load data when the widget is first created.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData(context);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final usuariosService = Provider.of<UsuariosService>(context);
-    final sesionesService = Provider.of<SesionesService>(context);
-    final gruposService = Provider.of<GruposService>(context);
-    if (usuariosService.isLoading ||
-        sesionesService.isLoading ||
-        gruposService.isLoading) {
-      return LoadingScreen();
-    } else {
-      _sesiones = sesionesService.sesiones;
-      _usuarios =
-          usuariosService.usuarios.where((u) => u.rol == "entrenador").toList();
-      _entrenadorSeleccionado = _usuarios[0];
-      _sesionSeleccionada = _sesiones[0];
-      _grupos = gruposService.grupos;
-      _grupoSeleccionado = _grupos[0];
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('Crear Clase'),
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextFormField(
-                  controller: _capacidadClientesController,
-                  keyboardType: TextInputType.number,
-                  decoration:
-                      InputDecoration(labelText: 'Capacidad de clientes'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Crear Clase'),
+      ),
+      body: _usuarios.isEmpty || _sesiones.isEmpty || _grupos.isEmpty
+          ? LoadingScreen()
+          : SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextFormField(
+                      controller: _capacidadClientesController,
+                      keyboardType: TextInputType.number,
+                      decoration:
+                          InputDecoration(labelText: 'Capacidad de clientes'),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Entrenador:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    _buildEntrenadorDropdown(),
+                    SizedBox(height: 8),
+                    _buildDateTimePicker(),
+                    SizedBox(height: 8),
+                    _buildSesionDropdown(),
+                    SizedBox(height: 8),
+                    _buildGrupoDropdown(),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: _crearClase,
+                      child: Text('Crear Clase'),
+                    ),
+                  ],
                 ),
-                Text(
-                  'Entrenador:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 8),
-                _buildEntrenadorDropdown(),
-                SizedBox(height: 8),
-                _buildDateTimePicker(),
-                SizedBox(height: 8),
-                _buildSesionDropdown(),
-                SizedBox(height: 8),
-                _buildGrupoDropdown(),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _crearClase,
-                  child: Text('Crear Clase'),
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
-      );
-    }
+    );
   }
 
   void _crearClase() {
     final capacidadClientes =
         int.tryParse(_capacidadClientesController.text) ?? 0;
-    final sesion = _sesionSeleccionada.id;
-    //final listaClientes = _listaClientesController.text.split(',');
+    final sesion = _sesionSeleccionada?.id ?? '';
     final fecha = _selectedDateTime;
-    //print('Tamaño lista clientes: ${listaClientes.length}');
-    if (capacidadClientes > 0 && fecha != null && sesion!.isNotEmpty
-        //&& listaClientes.isNotEmpty
-        ) {
+
+    if (capacidadClientes > 0 && fecha != null && sesion.isNotEmpty) {
       final nuevaClase = Clase(
         capacidadClientes: capacidadClientes,
         entrenador:
-            "${_entrenadorSeleccionado.nombre} ${_entrenadorSeleccionado.apellido}",
+            "${_entrenadorSeleccionado?.nombre} ${_entrenadorSeleccionado?.apellido}",
         fecha: fecha,
         sesion: sesion,
-        listaClientes: _grupoSeleccionado.listaClientes,
+        listaClientes: _grupoSeleccionado!.listaClientes,
       );
 
       final clasesService = ClasesService();

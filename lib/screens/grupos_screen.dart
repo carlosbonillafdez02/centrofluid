@@ -93,27 +93,32 @@ class _GruposScreenState extends State<GruposScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: gruposService.grupos.length,
-              itemBuilder: (BuildContext context, int index) {
-                final grupo = gruposService.grupos[index];
-                return GrupoCard(
-                  grupo: grupo,
-                  onTap: () {
-                    setState(() {
-                      _selectedGrupo = grupo;
-                      print(_selectedGrupo!.nombre);
-                    });
-                  },
-                  isSelected: _selectedGrupo == grupo,
-                );
-              },
+      body: RefreshIndicator(
+        onRefresh: () async {
+          gruposService.loadGrupos();
+        },
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: gruposService.grupos.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final grupo = gruposService.grupos[index];
+                  return GrupoCard(
+                    grupo: grupo,
+                    onTap: () {
+                      setState(() {
+                        _selectedGrupo = grupo;
+                        print(_selectedGrupo!.nombre);
+                      });
+                    },
+                    isSelected: _selectedGrupo == grupo,
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
