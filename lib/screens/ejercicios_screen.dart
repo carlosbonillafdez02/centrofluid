@@ -94,27 +94,32 @@ class _EjerciciosScreenState extends State<EjerciciosScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: ejerciciosService.ejercicios.length,
-              itemBuilder: (BuildContext context, int index) {
-                final ejercicio = ejerciciosService.ejercicios[index];
-                return EjercicioCard(
-                  ejercicio: ejercicio,
-                  onTap: () {
-                    setState(() {
-                      _selectedEjercicio = ejercicio;
-                      print(_selectedEjercicio!.nombre);
-                    });
-                  },
-                  isSelected: _selectedEjercicio == ejercicio,
-                );
-              },
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ejerciciosService.loadEjercicios();
+        },
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: ejerciciosService.ejercicios.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final ejercicio = ejerciciosService.ejercicios[index];
+                  return EjercicioCard(
+                    ejercicio: ejercicio,
+                    onTap: () {
+                      setState(() {
+                        _selectedEjercicio = ejercicio;
+                        print(_selectedEjercicio!.nombre);
+                      });
+                    },
+                    isSelected: _selectedEjercicio == ejercicio,
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
