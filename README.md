@@ -1,147 +1,160 @@
 # 🏋️ Centro Fluid App
 
+![Flutter](https://img.shields.io/badge/Flutter-Framework-blue)
+![Dart](https://img.shields.io/badge/Dart-Language-blue)
+![Firebase](https://img.shields.io/badge/Firebase-Backend-orange)
+![Status](https://img.shields.io/badge/Status-Completed-success)
+
 Aplicación móvil desarrollada como proyecto final del Grado Superior de Desarrollo de Aplicaciones Multiplataforma (DAM).
 
-Esta app ha sido creada específicamente para **Centro Fluid**, un centro de entrenamiento personal ubicado en Churriana de la Vega (Granada), con el objetivo de digitalizar y optimizar la gestión de entrenamientos, reservas y clientes.
+Diseñada específicamente para **Centro Fluid**, un centro de entrenamiento personal en Granada, con el objetivo de optimizar la gestión de entrenamientos, reservas y clientes mediante una solución totalmente personalizada.
 
 ---
 
-## 📱 Descripción
+## 🎥 Demo
 
-Centro Fluid App permite gestionar de forma eficiente las sesiones de entrenamiento tanto para **clientes** como para **entrenadores**.
+### 👤 Cliente
+[![Demo Cliente](https://img.youtube.com/vi/-jioJhLHQIk/0.jpg)](https://www.youtube.com/watch?v=-jioJhLHQIk)
 
-### 👤 Clientes pueden:
-- Reservar clases de entrenamiento
-- Cancelar reservas
-- Consultar historial de clases realizadas
-- Gestionar su perfil
-
-### 🧑‍🏫 Entrenadores pueden:
-- Crear, editar y eliminar ejercicios
-- Crear sesiones de entrenamiento
-- Gestionar grupos de clientes
-- Crear clases
-- Administrar reservas
+### 🧑‍🏫 Entrenador (Admin)
+[![Demo Admin](https://img.youtube.com/vi/Pwvky0tKPP4/0.jpg)](https://www.youtube.com/watch?v=Pwvky0tKPP4)
 
 ---
 
-## 🎥 Demo de la aplicación
-
-### 👤 Versión Cliente
-[![Ver demo cliente](https://img.youtube.com/vi/-jioJhLHQIk/0.jpg)](https://www.youtube.com/watch?v=-jioJhLHQIk)
-
-### 🧑‍🏫 Versión Entrenador (Admin)
-[![Ver demo entrenador](https://img.youtube.com/vi/Pwvky0tKPP4/0.jpg)](https://www.youtube.com/watch?v=Pwvky0tKPP4)
-
----
-
-## 📸 Capturas de pantalla
+## 📱 Capturas de pantalla
 
 ### 🔐 Autenticación
-![Login](screenshots/login.png)
-![Registro](screenshots/register.png)
+<p>
+  <img src="screenshots/login.png" width="250"/>
+  <img src="screenshots/register.png" width="250"/>
+</p>
 
 ### 🏠 Pantalla principal
-![Home](screenshots/home.png)
+<p>
+  <img src="screenshots/home.png" width="300"/>
+</p>
 
 ### 📅 Reservas
-![Reservas](screenshots/reservas.png)
+<p>
+  <img src="screenshots/reservas.png" width="300"/>
+</p>
 
 ### 👤 Perfil
-![Perfil](screenshots/perfil.png)
-![Editar perfil](screenshots/modificar_perfil.png)
+<p>
+  <img src="screenshots/perfil.png" width="250"/>
+  <img src="screenshots/modificar_perfil.png" width="250"/>
+</p>
 
-### ⚙️ Panel de administración (Entrenadores)
-![Admin](screenshots/admin.png)
-![Ejercicios](screenshots/ejercicios.png)
-![Sesiones](screenshots/sesiones.png)
-![Grupos](screenshots/grupos.png)
-![Crear clase](screenshots/crear_clase.png)
+### ⚙️ Panel de administración
+<p>
+  <img src="screenshots/admin.png" width="250"/>
+  <img src="screenshots/ejercicios.png" width="250"/>
+  <img src="screenshots/sesiones.png" width="250"/>
+</p>
 
----
-
-## 🎯 Objetivo del proyecto
-
-Desarrollar una solución personalizada que sustituya a aplicaciones comerciales que no se adaptaban a las necesidades del centro, ofreciendo:
-
-- Mayor control sobre la gestión del negocio
-- Experiencia de usuario personalizada
-- Sistema eficiente y en tiempo real
-- Herramienta lista para uso real
+<p>
+  <img src="screenshots/grupos.png" width="250"/>
+  <img src="screenshots/crear_clase.png" width="250"/>
+</p>
 
 ---
 
-## 🛠️ Tecnologías utilizadas
+## 🚀 Funcionalidades
 
-### 🚀 Frontend
-- **Flutter** → Framework multiplataforma
-- **Dart** → Lenguaje de programación
+### 👤 Clientes
+- Reserva y cancelación de clases
+- Visualización de historial
+- Gestión de perfil
 
-### 🔥 Backend (BaaS)
+### 🧑‍🏫 Entrenadores
+- CRUD de ejercicios
+- Creación de sesiones
+- Gestión de grupos
+- Creación de clases
+- Gestión de reservas
+
+---
+
+## 🛠️ Tecnologías
+
+### Frontend
+- **Flutter**
+- **Dart**
+
+### Backend
 - **Firebase**
-  - Firestore (Base de datos en tiempo real)
-  - Authentication (Gestión de usuarios)
+  - Firestore
+  - Authentication
 
-### 💻 Entorno de desarrollo
+### Herramientas
 - Visual Studio Code
+- Git & GitHub
 
 ---
 
-## ⚙️ Características principales
-
-- 🔐 Autenticación de usuarios
-- 📅 Sistema de reservas con calendario
-- 🔄 Sincronización en tiempo real
-- 👥 Gestión de roles (cliente / entrenador)
-- 🏋️ Gestión de ejercicios, sesiones y grupos
-- 📊 Historial de entrenamientos
-- 🌙 Modo oscuro
-
----
-
-## 🧠 Arquitectura y diseño
+## 🧠 Arquitectura
 
 - Arquitectura basada en **widgets reutilizables**
-- Separación de lógica y UI
-- Integración directa con Firebase
+- Separación de lógica y presentación
+- Integración en tiempo real con Firebase
 
-### 📊 Modelo de datos (resumen)
+### 📊 Modelo de datos
 
 - **Usuarios**
-  - Clientes
-  - Entrenadores (rol)
+  - Cliente / Entrenador (roles)
 
 - **Clases**
-  - Asociadas a sesión, entrenador y grupo
+  - Sesión + Entrenador + Grupo
 
 - **Grupos**
   - Conjunto de clientes
 
 - **Sesiones**
-  - Conjunto de ejercicios
+  - Lista de ejercicios
 
 ---
 
 ## 📈 Resultados
 
-✔ Aplicación completamente funcional  
-✔ Gestión en tiempo real  
-✔ Interfaz intuitiva  
-✔ Adaptada a necesidades reales  
+- Aplicación funcional lista para uso real
+- Sincronización en tiempo real
+- Interfaz intuitiva
+- Adaptada a necesidades reales del cliente
 
 ---
 
 ## ⚠️ Limitaciones
 
 - Tiempo limitado de desarrollo
-- Funcionalidades avanzadas no implementadas
+- Algunas funcionalidades avanzadas pendientes
 - Complejidad en sincronización en tiempo real
 
 ---
 
-## 🚀 Futuras mejoras
+## 🔮 Futuras mejoras
 
 - 🔔 Notificaciones push
 - 📧 Verificación por email
 - 📊 Seguimiento de progreso (pesos)
-- 🔐 Persistencia de sesión (auto-login)
+- 🔐 Persistencia de sesión
+
+---
+
+## 👨‍💻 Autor
+
+**Carlos Bonilla Fernández**
+
+- 📧 carlosbonillafdez02@gmail.com  
+- 🐙 https://github.com/carlosbonillafdez02
+- 💼 https://www.linkedin.com/in/carlos-bonilla-dev/ 
+
+---
+
+## ⭐ Conclusión
+
+Este proyecto ha supuesto el desarrollo de una solución real para una empresa real, implicando aprendizaje autónomo, toma de decisiones tecnológicas y resolución de problemas complejos.
+
+---
+
+## 🙌 Gracias por visitar el repositorio
+Si te interesa el proyecto o tienes cualquier duda, no dudes en contactar.
